@@ -19,7 +19,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "android_api";
+    private static final String DATABASE_NAME = "docagr_android";
 
     // Login table name
     private static final String TABLE_LOGIN = "login";
@@ -38,6 +38,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+
+
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_LOGIN + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
                 + KEY_EMAIL + " TEXT UNIQUE," + KEY_UID + " TEXT,"
@@ -45,6 +48,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_LOGIN_TABLE);
 
         Log.d(TAG, "Database tables created");
+
+
+//        Log.d(TAG,"delete everytning");
+//        db.execSQL("TRUNCATE TABLE  login");
+//        Log.d(TAG, "deleted everytning");
     }
 
     // Upgrading database

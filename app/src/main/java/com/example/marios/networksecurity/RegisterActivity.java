@@ -1,7 +1,5 @@
 package com.example.marios.networksecurity;
 
-
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +51,7 @@ public class RegisterActivity extends Activity {
         session = new SessionManager(getApplicationContext());
 
         // SQLite database handler
-        db = new SQLiteHandler(getApplicationContext());
+        //db = new SQLiteHandler(getApplicationContext());
 
         // Check if user is already logged in or not
         if (session.isLoggedIn()) {
@@ -106,24 +104,6 @@ public class RegisterActivity extends Activity {
         pDialog.setMessage("Registering ...");
         showDialog();
 
-        /*
-        StringRequest new StringRequest( POST, URL , new REsponse.Listener , Response.ErrorListener) { getParams} );
-        */
-//
-//        StringRequest a = new StringRequest(Method.POST, AppConfig.URL_REGISTER ,null, null){
-//            @Override
-//            protected Map<String, String> getParams() {
-//                // Posting params to register url
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("tag", "register");
-//                params.put("name", name);
-//                params.put("email", email);
-//                params.put("password", password);
-//
-//                return params;
-//            }
-//        };
-
         StringRequest strReq = new StringRequest(Method.POST,
                 AppConfig.URL_REGISTER, new Response.Listener<String>() {
 
@@ -146,7 +126,7 @@ public class RegisterActivity extends Activity {
                         String created_at = user.getString("created_at");
 
                         // Inserting row in users table
-                        db.addUser(name, email, uid, created_at);
+                        //db.addUser(name, email, uid, created_at);
 
                         // Launch login activity
                         Intent intent = new Intent(

@@ -37,6 +37,9 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        getApplicationContext().deleteDatabase("docagr_android");
+        getApplicationContext().deleteDatabase("android_api");
+
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         btnLogin = (Button) findViewById(R.id.btnLogin);
@@ -124,9 +127,9 @@ public class LoginActivity extends Activity {
                         String name = user.getString("name");
                         String email = user.getString("email");
 
-                        SQLiteHandler db = new SQLiteHandler(getApplicationContext());
-
-                        db.getLoginUser(name, email);
+//                        SQLiteHandler db = new SQLiteHandler(getApplicationContext());
+//
+//                        db.getLoginUser(name, email);
 
                         // Launch main activity
                         Intent intent = new Intent(LoginActivity.this,
