@@ -32,7 +32,7 @@ public class RegisterActivity extends Activity {
     private EditText inputPassword;
     private ProgressDialog pDialog;
     private SessionManager session;
-    private SQLiteHandler db;
+    public static SQLiteHandler db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

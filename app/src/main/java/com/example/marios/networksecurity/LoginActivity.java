@@ -102,7 +102,7 @@ public class LoginActivity extends Activity {
         showDialog();
 
         StringRequest strReq = new StringRequest(Method.POST,
-                AppConfig.URL_REGISTER, new Response.Listener<String>() {
+                AppConfig.URL_LOGIN, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
@@ -118,6 +118,15 @@ public class LoginActivity extends Activity {
                         // user successfully logged in
                         // Create login session
                         session.setLogin(true);
+
+                        // FIX FOR USER EMAIL FAILURE
+                        JSONObject user = jObj.getJSONObject("user");
+                        String name = user.getString("name");
+                        String email = user.getString("email");
+
+                        SQLiteHandler db = new SQLiteHandler(getApplicationContext());
+
+                        db.getLoginUser(name, email);
 
                         // Launch main activity
                         Intent intent = new Intent(LoginActivity.this,
