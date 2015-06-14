@@ -1,15 +1,25 @@
 package com.example.marios.networksecurity;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +30,7 @@ import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class RegisterActivity extends Activity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
@@ -31,6 +42,16 @@ public class RegisterActivity extends Activity {
     private ProgressDialog pDialog;
     private SessionManager session;
     public static SQLiteHandler db;
+
+
+    // gc stuff
+    GoogleCloudMessaging gcm;
+    Context context;
+    String gcm_regid;
+
+    public static final String REG_ID = "gcm_regid";
+    private static final String APP_VERSION = "appVersion";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +71,14 @@ public class RegisterActivity extends Activity {
         // Session manager
         session = new SessionManager(getApplicationContext());
 
+        if (TextUtils.isEmpty(gcm_regid)) {
+            gcm_regid = registerGCM();
+            Log.d("RegisterActivity", "GCM gcm_regid: " + gcm_regid);
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Already Registered with GCM Server!",
+                    Toast.LENGTH_LONG).show();
+        }
         // SQLite database handler
         //db = new SQLiteHandler(getApplicationContext());
 
@@ -70,10 +99,12 @@ public class RegisterActivity extends Activity {
                 String password = inputPassword.getText().toString();
 
                 if (!name.isEmpty() && !email.isEmpty() && !password.isEmpty()) {
-                    registerUser(name, email, password);
+
+                    Log.d(TAG,"Sending stuff to register user android name"+name+" pass :"+password+" email:"+email+" regid :"+gcm_regid);
+                    registerUser(name, email, password, gcm_regid);
                 } else {
                     Toast.makeText(getApplicationContext(),
-                            "Please enter your details!", Toast.LENGTH_LONG)
+                            "Please enter your details!", Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -97,7 +128,7 @@ public class RegisterActivity extends Activity {
      * email, password) to register url
      */
     private void registerUser(final String name, final String email,
-                              final String password) {
+                              final String password , final String gcm_regid) {
         // Tag used to cancel the request
         String tag_string_req = "req_register";
 
@@ -124,6 +155,7 @@ public class RegisterActivity extends Activity {
                         String name = user.getString("name");
                         String email = user.getString("email");
                         String created_at = user.getString("created_at");
+                        String gcm_regid = user.getString("gcm_regid");
 
                         // Inserting row in users table
                         //db.addUser(name, email, uid, created_at);
@@ -132,6 +164,7 @@ public class RegisterActivity extends Activity {
                         Intent intent = new Intent(
                                 RegisterActivity.this,
                                 LoginActivity.class);
+                        intent .putExtra("gcm_regid", gcm_regid);
                         startActivity(intent);
                         finish();
                     } else {
@@ -153,7 +186,7 @@ public class RegisterActivity extends Activity {
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Registration Error: " + error.getMessage());
                 Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
                 hideDialog();
             }
         }) {
@@ -162,10 +195,12 @@ public class RegisterActivity extends Activity {
             protected Map<String, String> getParams() {
                 // Posting params to register url
                 Map<String, String> params = new HashMap<String, String>();
+                Log.d(TAG,"Sending to php file :"+name+" "+email+" "+password+" "+gcm_regid);
                 params.put("tag", "register");
                 params.put("name", name);
                 params.put("email", email);
                 params.put("password", password);
+                params.put("gcm_regid",gcm_regid);
 
                 return params;
             }
@@ -184,5 +219,70 @@ public class RegisterActivity extends Activity {
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    public String registerGCM() {
+
+        gcm = GoogleCloudMessaging.getInstance(this);
+        gcm_regid = session.getRegId();
+
+        if (TextUtils.isEmpty(gcm_regid)) {
+
+            try {
+                registerInBackground();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("RegisterActivity",
+                    "registerGCM - successfully registered with GCM server - gcm_regid: "
+                            + gcm_regid);
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "gcm_regid already available. gcm_regid: " + gcm_regid,
+                    Toast.LENGTH_SHORT).show();
+        }
+        return gcm_regid;
+    }
+
+
+
+    private void registerInBackground() throws InterruptedException, ExecutionException, TimeoutException {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(context);
+                    }
+                    gcm_regid = gcm.register(AppConfig.GOOGLE_PROJECT_ID);
+                    Log.d("RegisterActivity", "registerInBackground - gcm_regid: "
+                            + gcm_regid);
+                    msg = "Device registered, registration ID=" + gcm_regid;
+
+                    //string reg id in device
+
+                    session.setRegId(gcm_regid);
+                    //storeRegistrationId(context, gcm_regid);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                    Log.d("RegisterActivity", "Error: " + msg);
+                }
+                Log.d("RegisterActivity", "AsyncTask completed: " + msg);
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Toast.makeText(getApplicationContext(),
+                        "Registered with GCM Server." + msg, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }.execute(null, null, null);
     }
 }

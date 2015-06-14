@@ -3,11 +3,15 @@ package com.example.marios.networksecurity;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -18,11 +22,43 @@ public class MainActivity extends Activity {
     private SQLiteHandler db;
     private SessionManager session;
 
+    // Google CLoud Message stuff
+    ShareExternalServer appUtil;
+    String regId;
+    AsyncTask<Void, Void, String> shareRegidTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+//        // GCDM STUFF ========================================
+//        appUtil = new ShareExternalServer();
+//
+//        regId = session.getRegId();
+//        if(regId==""){
+//            Toast.makeText(getApplicationContext(),
+//                    "REGID IS MISSING", Toast.LENGTH_LONG)
+//                    .show();
+//        }
+//        Log.d("MainActivity", "regId: " + regId);
+//
+//        final Context context = this;
+//        shareRegidTask = new AsyncTask<Void, Void, String>() {
+//            @Override
+//            protected String doInBackground(Void... params) {
+//                String result = appUtil.shareRegIdWithAppServer(context, regId);
+//                return result;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(String result) {
+//                shareRegidTask = null;
+//                Toast.makeText(getApplicationContext(), result,
+//                        Toast.LENGTH_LONG).show();
+//            }
+//
+//        };
+//        shareRegidTask.execute(null, null, null);
+        // GCDM STUFF ========================================
         txtName = (TextView) findViewById(R.id.name);
         txtEmail = (TextView) findViewById(R.id.email);
         btnLogout = (Button) findViewById(R.id.btnLogout);
