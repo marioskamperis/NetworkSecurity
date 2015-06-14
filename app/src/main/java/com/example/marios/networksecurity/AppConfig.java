@@ -11,6 +11,8 @@ public class AppConfig {
 
     public static String APP_SERVER_URL = "http://192.168.1.1/android_login_api/";
     // Google Project Number
+
+
     static final String GOOGLE_PROJECT_ID = "485964763136";
     static final String MESSAGE_KEY = "message";
 }
