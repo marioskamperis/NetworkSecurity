@@ -23,7 +23,7 @@ public class MainActivity extends Activity {
     private SessionManager session;
 
     // Google CLoud Message stuff
-    ShareExternalServer appUtil;
+    //ShareExternalServer appUtil;
     String regId;
     AsyncTask<Void, Void, String> shareRegidTask;
     @Override

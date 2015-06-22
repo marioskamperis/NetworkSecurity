@@ -109,6 +109,7 @@ public class LoginActivity extends Activity {
 
             @Override
             public void onResponse(String response) {
+                response=response.substring(response.lastIndexOf("{\"tag\""));
                 Log.d(TAG, "Login Response: " + response.toString());
                 hideDialog();
 

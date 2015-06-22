@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_login"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@color/bg_login"
+            android:text="Your security code :"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/txtCode"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@color/bg_login"
+            android:gravity="center"
+            android:textSize="55dp"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/input_login" />
+
+
+    </LinearLayout>
+
+</LinearLayout>
