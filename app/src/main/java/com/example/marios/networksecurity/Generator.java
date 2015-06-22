@@ -25,6 +25,7 @@ public class Generator extends Activity {
         Intent i = getIntent();
 
         String txt = i.getStringExtra("message");
+        Log.d(TAG,"message :"+txt);
 
         txt = txt.substring(txt.indexOf(':')+1).trim();
         Log.d(TAG, txt);

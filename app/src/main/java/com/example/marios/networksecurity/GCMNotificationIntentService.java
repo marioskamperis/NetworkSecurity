@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -67,29 +68,45 @@ public class GCMNotificationIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void sendNotification(String message) {
+
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        @SuppressWarnings("deprecation")
+//
+//        Notification notification = new Notification(R.drawable.gcm_cloud,message, System.currentTimeMillis());
+//        Intent notificationIntent = new Intent(this,Generator.class);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,notificationIntent, 0);
+//
+//        notification.setLatestEventInfo(GCMNotificationIntentService.this, "Your Security Code:",message, pendingIntent);
+//        notificationManager.notify(NOTIFICATION_ID, notification);
+
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.gcm_cloud)
                         .setContentTitle("Your Security Code")
-                        .setContentText(message);
+                        .setContentText(message)
+                        .setAutoCancel(true)
+                        .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
+                        .setLights(Color.RED, 3000, 3000);
 
         Intent resultIntent = new Intent(this, Generator.class);
+        Log.d(TAG,message);
         resultIntent.putExtra("message", message);
+        Log.d(TAG,message);
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
         // This ensures that navigating backward from the Activity leads out of
         // your application to the Home screen.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(LoginActivity.class);
+        stackBuilder.addParentStack(Generator.class);
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
                         0,
-                        PendingIntent.FLAG_ONE_SHOT
+                        PendingIntent.FLAG_UPDATE_CURRENT
                 );
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
@@ -98,9 +115,9 @@ public class GCMNotificationIntentService extends IntentService {
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
 
-//
-//
-//
+
+
+
 //        Context context = getApplicationContext();
 //        long when = System.currentTimeMillis(); //now
 //        NotificationManager notificationManager = (NotificationManager) context
